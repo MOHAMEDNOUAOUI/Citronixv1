@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -26,4 +27,10 @@ public class Recolte {
 
     @Column(name = "saison" , nullable = false)
     private Saison saison;
+
+    @OneToMany(mappedBy = "recolte" , fetch = FetchType.EAGER)
+    private List<Vente> venteList;
+
+    @OneToMany(mappedBy = "recolte", cascade = CascadeType.ALL)
+    private List<DetailRecolte> detailRecoltes;
 }
