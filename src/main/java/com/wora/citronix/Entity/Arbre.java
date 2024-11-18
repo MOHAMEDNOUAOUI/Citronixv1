@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -24,9 +25,9 @@ public class Arbre {
     @Column(name = "date_de_plantation" , nullable = false)
     private LocalDate dateDePlantation;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER , optional = false)
     private Champ champ;
 
-    @OneToMany(mappedBy = "arbre", cascade = CascadeType.ALL)
-    private List<DetailRecolte> detailRecoltes;
+    @OneToMany(mappedBy = "arbre", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+    private Set<DetailRecolte> detailRecoltes;
 }

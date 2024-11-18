@@ -20,11 +20,9 @@ public class DetailRecolte {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("arbreId")
-    @JoinColumn(name = "arbre_id")
     private Arbre arbre;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("recolteId")
-    @JoinColumn(name = "recolte_id")
     private Recolte recolte;
 }
