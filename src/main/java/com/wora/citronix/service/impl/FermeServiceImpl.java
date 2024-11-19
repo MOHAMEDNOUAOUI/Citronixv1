@@ -2,6 +2,7 @@ package com.wora.citronix.service.impl;
 
 import com.wora.citronix.DTO.Ferme.CreateFermeDTO;
 import com.wora.citronix.DTO.Ferme.ResponseFermeDTO;
+import com.wora.citronix.DTO.Ferme.SearchFermeDTO;
 import com.wora.citronix.Entity.Ferme;
 import com.wora.citronix.Mapper.FermeMapper;
 import com.wora.citronix.repository.CriteriaBuilder.FermeCriteria;
@@ -44,8 +45,8 @@ public class FermeServiceImpl implements FermeService {
     }
 
     @Override
-    public List<ResponseFermeDTO> getAllFermesByNameAndLocalisation(String name, String Localisation) {
-        List<Ferme> fermes = fermeCriteria.findByNameAndLocalisation(name , Localisation);
+    public List<ResponseFermeDTO> getAllFermesByNameAndLocalisation(SearchFermeDTO searchFermeDTO) {
+        List<Ferme> fermes = fermeCriteria.findByNameAndLocalisation(searchFermeDTO.getNom() , searchFermeDTO.getLocalisation());
         if (fermes.isEmpty()){
             throw new RuntimeException("The are no fermes yet");
         }

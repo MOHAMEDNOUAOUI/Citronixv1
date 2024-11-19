@@ -1,6 +1,7 @@
 package com.wora.citronix.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class Champ {
     private Long id;
 
     @Column(nullable = false , name = "superficie")
+    @Min(1000)
     private Double superficie;
 
     @ManyToOne(fetch = FetchType.EAGER)
