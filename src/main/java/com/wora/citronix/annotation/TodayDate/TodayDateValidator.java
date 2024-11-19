@@ -1,4 +1,4 @@
-package com.wora.citronix.annotation;
+package com.wora.citronix.annotation.TodayDate;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -14,7 +14,11 @@ public class TodayDateValidator implements ConstraintValidator<TodayDate , Local
 
     @Override
     public boolean isValid(LocalDate localDate, ConstraintValidatorContext constraintValidatorContext) {
-        return false;
+        if (localDate == null){
+            return false;
+        }
+
+        return !localDate.isBefore(LocalDate.now());
     }
 
 }

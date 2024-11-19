@@ -1,4 +1,4 @@
-package com.wora.citronix.annotation;
+package com.wora.citronix.annotation.TodayDate;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
