@@ -5,6 +5,7 @@ import com.wora.citronix.DTO.Arbre.CreateArbreDTO;
 import com.wora.citronix.DTO.Arbre.ResponseArbreDTO;
 import com.wora.citronix.repository.ArbreRepository;
 import com.wora.citronix.service.ArbreService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -21,7 +22,7 @@ public class ArbreController {
     private ArbreService arbreService;
 
     @PostMapping
-    public ResponseEntity<ResponseArbreDTO> createArbre(@RequestBody CreateArbreDTO createArbreDTO) {
+    public ResponseEntity<ResponseArbreDTO> createArbre(@RequestBody @Valid CreateArbreDTO createArbreDTO) {
         ResponseArbreDTO response = arbreService.createArbre(createArbreDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

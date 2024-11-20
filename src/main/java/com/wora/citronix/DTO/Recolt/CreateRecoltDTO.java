@@ -1,9 +1,10 @@
-package com.wora.citronix.DTO.Arbre;
+package com.wora.citronix.DTO.Recolt;
 
-import com.wora.citronix.Entity.Champ;
-import com.wora.citronix.Entity.DetailRecolte;
+
+import com.wora.citronix.Entity.Enum.Saison;
 import com.wora.citronix.annotation.TodayDate.TodayDate;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -11,15 +12,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateArbreDTO {
-    @NotNull
+public class CreateRecoltDTO {
     @TodayDate
-    private LocalDate dateDePlantation;
+    private LocalDate dateRecolte = LocalDate.now();
     @NotNull
-    private Long champ_id;
+    @Min(0)
+    private Double quantiteTotal = 0.0;
+    @NotNull
+    private Saison saison;
 }

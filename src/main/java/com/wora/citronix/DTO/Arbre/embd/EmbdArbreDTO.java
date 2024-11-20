@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class EmbdArbreDTO {
     private Long id;
-    private int age;
+    private String age;
     private LocalDate dateDePlantation;
     //detail recolts
 }

@@ -1,6 +1,7 @@
 package com.wora.citronix.DTO.Arbre;
 
 
+import com.wora.citronix.DTO.Champ.embd.EmdbChampDTO;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ResponseArbreDTO {
     private Long id;
-    private int age;
+    private String age;
     private LocalDate dateDePlantation;
+    private EmdbChampDTO champ;
 }

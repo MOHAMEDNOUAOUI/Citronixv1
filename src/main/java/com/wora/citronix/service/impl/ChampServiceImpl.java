@@ -36,6 +36,10 @@ public class ChampServiceImpl implements ChampService {
                 .mapToDouble(Champ::getSuperficie)
                 .sum();
 
+        if (ferme.getChampsList().size() >= 10) {
+            throw new RuntimeException("Farm cannot have more than 10 champs");
+        }
+
         if (allowableSuperficie < champ.getSuperficie()){
             throw new RuntimeException("champ ne peut dépasser "+ferme.getSuperficie()/2+" de la superficie totale de la ferme.");
         }
@@ -43,6 +47,8 @@ public class ChampServiceImpl implements ChampService {
         if (ferme.getSuperficie() < totalExistingSuperficie + champ.getSuperficie()) {
             throw new RuntimeException("you have exceeted the limit , thers is only " + (ferme.getSuperficie() - totalExistingSuperficie) + " available");
         }
+
+
 
         champ.setFerme(ferme);
         Champ savedChamp = champsRepository.save(champ);

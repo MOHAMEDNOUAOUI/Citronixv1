@@ -19,9 +19,6 @@ public class Arbre {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false , name = "age")
-    private int age;
-
     @Column(name = "date_de_plantation" , nullable = false)
     private LocalDate dateDePlantation;
 

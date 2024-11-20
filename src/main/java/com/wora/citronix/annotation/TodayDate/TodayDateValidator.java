@@ -18,7 +18,7 @@ public class TodayDateValidator implements ConstraintValidator<TodayDate , Local
             return false;
         }
 
-        return !localDate.isBefore(LocalDate.now());
+        return !localDate.isAfter(LocalDate.now());
     }
 
 }
