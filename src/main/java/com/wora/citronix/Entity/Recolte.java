@@ -31,6 +31,6 @@ public class Recolte {
     @OneToMany(mappedBy = "recolte" , fetch = FetchType.EAGER)
     private List<Vente> venteList;
 
-    @OneToMany(mappedBy = "recolte", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recolte", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
     private List<DetailRecolte> detailRecoltes;
 }

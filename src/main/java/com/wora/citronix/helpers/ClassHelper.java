@@ -1,7 +1,11 @@
 package com.wora.citronix.helpers;
 
 import com.wora.citronix.DTO.Arbre.ResponseArbreDTO;
+import com.wora.citronix.DTO.Recolt.ResponseRecoltDTO;
+import com.wora.citronix.DTO.Recolt.UpdateRecoltDTO;
 import com.wora.citronix.Entity.Arbre;
+import com.wora.citronix.Entity.Recolte;
+import com.wora.citronix.service.RecolteService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,9 +16,12 @@ import java.time.Period;
 
 @Data
 @Component
+@AllArgsConstructor
 public class ClassHelper {
 
-    public void calculateArbreAge(ResponseArbreDTO response , Arbre arbre) {
+
+
+    public String calculateArbreAge(Arbre arbre) {
         Period agePeriod = Period.between(arbre.getDateDePlantation(), LocalDate.now());
         int Years = agePeriod.getYears();
         int Months = agePeriod.getMonths();
@@ -39,6 +46,29 @@ public class ClassHelper {
         if (ageString.isEmpty()){
             ageString = "Less than a day old";
         }
-        response.setAge(ageString);
+
+        return ageString;
+    }
+
+
+    // recolt
+
+    public void checkRecoltData(UpdateRecoltDTO updateRecoltDTO , Long id){
+        if (updateRecoltDTO.getDateRecolte() == null && updateRecoltDTO.getSaison() == null && updateRecoltDTO.getQuantiteTotal() == null){
+            throw new RuntimeException("No data provided to be updated");
+        }
+    }
+
+    public void updateRecoltData(Recolte recolte , UpdateRecoltDTO updateRecoltDTO){
+        if (updateRecoltDTO.getQuantiteTotal() != null && !updateRecoltDTO.getQuantiteTotal().equals(recolte.getQuantiteTotal()) && updateRecoltDTO.getQuantiteTotal() >= 0){
+            recolte.setQuantiteTotal(updateRecoltDTO.getQuantiteTotal());
+        }
+        if (updateRecoltDTO.getDateRecolte() != null && !updateRecoltDTO.getDateRecolte().equals(recolte.getDateRecolte())) {
+            recolte.setDateRecolte(updateRecoltDTO.getDateRecolte());
+        }
+
+        if (updateRecoltDTO.getSaison() != null && !updateRecoltDTO.getSaison().equals(recolte.getSaison())) {
+            recolte.setSaison(updateRecoltDTO.getSaison());
+        }
     }
 }

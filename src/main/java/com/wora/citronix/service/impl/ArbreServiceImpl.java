@@ -33,16 +33,23 @@ public class ArbreServiceImpl implements ArbreService {
 
     @Override
     public ResponseArbreDTO createArbre(CreateArbreDTO createArbreDTO) {
+        if (createArbreDTO.getDateDePlantation().getMonthValue() > 5 || createArbreDTO.getDateDePlantation().getMonthValue() < 3){
+          throw new RuntimeException("you cant plant a tree before mars or after mai");
+        }
+
         Arbre arbre = arbreMapper.toEntit(createArbreDTO);
         Champ champ = champsRepository.findById(createArbreDTO.getChamp_id()).orElseThrow(() -> new EntityNotFoundException("Champ does not exist"));
         Double totalArbreAllowable =(champ.getSuperficie() * 100) / 1000; // par m2
+
         if (champ.getArbreList().size() >= totalArbreAllowable) {
             throw new RuntimeException("You have exceeted the limit of Arbre");
         }
+
         arbre.setChamp(champ);
         Arbre savedArbre = arbreRepository.save(arbre);
         ResponseArbreDTO responseArbreDTO = arbreMapper.toResponse(savedArbre);
-        classHelper.calculateArbreAge(responseArbreDTO,savedArbre);
+        String age = classHelper.calculateArbreAge(savedArbre);
+        responseArbreDTO.setAge(age);
         return responseArbreDTO;
     }
 
@@ -50,7 +57,8 @@ public class ArbreServiceImpl implements ArbreService {
     public ResponseArbreDTO getArbreById(Long id) {
         Arbre arbre = arbreRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Arbre not found"));
         ResponseArbreDTO responseArbreDTO = arbreMapper.toResponse(arbre);
-        classHelper.calculateArbreAge(responseArbreDTO ,arbre);
+        String age = classHelper.calculateArbreAge(arbre);
+        responseArbreDTO.setAge(age);
         return responseArbreDTO;
     }
 
@@ -62,7 +70,8 @@ public class ArbreServiceImpl implements ArbreService {
         }
         return arbreList.stream().map(arbre -> {
             ResponseArbreDTO responseArbreDTO = arbreMapper.toResponse(arbre);
-            classHelper.calculateArbreAge(responseArbreDTO ,arbre);
+            String age = classHelper.calculateArbreAge(arbre);
+            responseArbreDTO.setAge(age);
             return responseArbreDTO;
         }).toList();
     }

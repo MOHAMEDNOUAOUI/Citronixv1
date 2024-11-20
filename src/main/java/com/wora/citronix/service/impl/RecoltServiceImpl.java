@@ -2,8 +2,10 @@ package com.wora.citronix.service.impl;
 
 import com.wora.citronix.DTO.Recolt.CreateRecoltDTO;
 import com.wora.citronix.DTO.Recolt.ResponseRecoltDTO;
+import com.wora.citronix.DTO.Recolt.UpdateRecoltDTO;
 import com.wora.citronix.Entity.Recolte;
 import com.wora.citronix.Mapper.RecoltMapper;
+import com.wora.citronix.helpers.ClassHelper;
 import com.wora.citronix.repository.RecolteRepository;
 import com.wora.citronix.service.RecolteService;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,6 +21,7 @@ import java.util.List;
 public class RecoltServiceImpl implements RecolteService {
     private final RecolteRepository recolteRepository;
     private final RecoltMapper recoltMapper;
+    private final ClassHelper classHelper;
 
 
     @Override
@@ -52,7 +55,13 @@ public class RecoltServiceImpl implements RecolteService {
     }
 
     @Override
-    public ResponseRecoltDTO updateRecolt(CreateRecoltDTO createRecoltDTO, Long id) {
-        return null;
+    public ResponseRecoltDTO updateRecolt(UpdateRecoltDTO updateRecoltDTO, Long id) {
+        Recolte recolte = recolteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Recolt was not found"));
+        classHelper.checkRecoltData(updateRecoltDTO,id);
+        classHelper.updateRecoltData(recolte,updateRecoltDTO);
+        recolteRepository.save(recolte);
+        return recoltMapper.toResponse(recolte);
     }
+
+
 }

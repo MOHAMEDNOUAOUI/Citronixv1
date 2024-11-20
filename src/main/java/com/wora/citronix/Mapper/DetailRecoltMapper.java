@@ -4,6 +4,7 @@ import com.wora.citronix.DTO.DetailRecolt.CreateDetailRecoltDTO;
 import com.wora.citronix.DTO.DetailRecolt.ResponseDetailRecoltDTO;
 import com.wora.citronix.Entity.DetailRecolte;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface DetailRecoltMapper {

@@ -26,5 +26,5 @@ public class Arbre {
     private Champ champ;
 
     @OneToMany(mappedBy = "arbre", cascade = CascadeType.ALL , fetch = FetchType.EAGER)
-    private Set<DetailRecolte> detailRecoltes;
+    private List<DetailRecolte> detailRecoltes;
 }

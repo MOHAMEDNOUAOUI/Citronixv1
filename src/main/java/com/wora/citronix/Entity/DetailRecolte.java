@@ -18,11 +18,11 @@ public class DetailRecolte {
     @Column(nullable = false)
     private Double quantite;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("arbreId")
     private Arbre arbre;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("recolteId")
     private Recolte recolte;
 }

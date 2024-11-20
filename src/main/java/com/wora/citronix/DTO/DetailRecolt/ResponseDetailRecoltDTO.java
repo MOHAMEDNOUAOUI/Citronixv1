@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResponseDetailRecoltDTO {
-    private Long id;
     private Double quantite;
     private EmbdArbreDTO arbre;
-    private EmbdRecoltDTO recolt;
+    private EmbdRecoltDTO recolte;
 }

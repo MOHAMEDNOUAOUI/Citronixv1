@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ArbreMapper {
     @Mapping(source = "champ" , target = "champ")
+    @Mapping(source = "detailRecoltes" , target = "detailRecoltes")
     ResponseArbreDTO toResponse(Arbre arbre);
     Arbre toEntit(CreateArbreDTO createArbreDTO);
     Arbre toEntityFromResponse(ResponseArbreDTO responseArbreDTO);

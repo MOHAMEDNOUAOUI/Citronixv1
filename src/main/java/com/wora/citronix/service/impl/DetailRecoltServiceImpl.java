@@ -4,12 +4,16 @@ import com.wora.citronix.DTO.Arbre.ResponseArbreDTO;
 import com.wora.citronix.DTO.DetailRecolt.CreateDetailRecoltDTO;
 import com.wora.citronix.DTO.DetailRecolt.ResponseDetailRecoltDTO;
 import com.wora.citronix.DTO.Recolt.ResponseRecoltDTO;
+import com.wora.citronix.DTO.Recolt.UpdateRecoltDTO;
 import com.wora.citronix.Entity.Arbre;
 import com.wora.citronix.Entity.DetailRecolte;
 import com.wora.citronix.Entity.Recolte;
+import com.wora.citronix.Entity.emdb.DetailRecolteId;
 import com.wora.citronix.Mapper.ArbreMapper;
 import com.wora.citronix.Mapper.DetailRecoltMapper;
 import com.wora.citronix.Mapper.RecoltMapper;
+import com.wora.citronix.helpers.ClassHelper;
+import com.wora.citronix.repository.ArbreRepository;
 import com.wora.citronix.repository.DetailRecolteRepository;
 import com.wora.citronix.repository.RecolteRepository;
 import com.wora.citronix.service.ArbreService;
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Service;
 import javax.management.relation.RelationNotFoundException;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -29,47 +34,85 @@ import java.util.List;
 public class DetailRecoltServiceImpl implements DetailRecoltService {
     private final DetailRecoltMapper detailRecoltMapper;
     private final DetailRecolteRepository detailRecolteRepository;
+    private final RecolteRepository recolteRepository;
+    private final ArbreRepository arbreRepository;
     private final RecolteService recolteService;
-    private final ArbreService arbreService;
-    private final ArbreMapper arbreMapper;
-    private final RecoltMapper recoltMapper;
+    private final ClassHelper classHelper;
 
     @Override
     public ResponseDetailRecoltDTO Harvest(CreateDetailRecoltDTO createDetailRecoltDTO) {
         DetailRecolte detailRecolte = detailRecoltMapper.toEntity(createDetailRecoltDTO);
-        ResponseRecoltDTO recolt = recolteService.findRecoltById(createDetailRecoltDTO.getRecolt_id());
-        ResponseArbreDTO arbre = arbreService.getArbreById(createDetailRecoltDTO.getArbre_id());
-        LocalDate recoltedDay = recolt.getDateRecolte();
-        Period periodbetwenRecolteDayandToday = Period.between(recoltedDay , LocalDate.now());
-        if (recoltedDay.plusMonths(3).isBefore(LocalDate.now())){
-            throw new RuntimeException("You can recolt this Arbre before the next season , remaining time : " + periodbetwenRecolteDayandToday.getChronology());
+
+        Arbre arbre = arbreRepository.findById(createDetailRecoltDTO.getArbre_id()).orElseThrow(() -> new EntityNotFoundException("Arbre was not found"));
+
+        LocalDate arbreRecoltDay = arbre.getDetailRecoltes().stream()
+                .map(DetailRecolte::getRecolte)
+                .max(Comparator.comparing(Recolte::getDateRecolte))
+                .map(Recolte::getDateRecolte)
+                .orElse(null);
+
+
+        if (arbreRecoltDay == null || arbreRecoltDay.plusMonths(3).isBefore(LocalDate.now())) {
+            // Proceed with the new harvest (Recolte)
+            Recolte recolt = recolteRepository.findById(createDetailRecoltDTO.getRecolt_id())
+                    .orElseThrow(() -> new EntityNotFoundException("Recolt was not found"));
+
+            detailRecolte.setRecolte(recolt);
+            detailRecolte.setArbre(arbre);
+
+            DetailRecolteId ids = new DetailRecolteId();
+            ids.setRecolteId(recolt.getId());
+            ids.setArbreId(arbre.getId());
+            detailRecolte.setId(ids);
+
+            UpdateRecoltDTO updateRecoltDTO = new UpdateRecoltDTO();
+            updateRecoltDTO.setQuantiteTotal(recolt.getQuantiteTotal() + createDetailRecoltDTO.getQuantite());
+            recolteService.updateRecolt(updateRecoltDTO, recolt.getId());
+
+            DetailRecolte savedDetailRecolt = detailRecolteRepository.save(detailRecolte);
+            ResponseDetailRecoltDTO response = detailRecoltMapper.toResponse(savedDetailRecolt);
+
+            String age = classHelper.calculateArbreAge(arbre);
+            response.getArbre().setAge(age);
+
+            return response;
+        } else {
+            Period periodBetweenLastRecoltAndNow = Period.between(arbreRecoltDay, LocalDate.now());
+            long remainingMonths = 3 - periodBetweenLastRecoltAndNow.getMonths();
+            long remainingDays = 30 - periodBetweenLastRecoltAndNow.getDays();
+
+            throw new RuntimeException("You cannot harvest this Arbre yet. Remaining time: "
+                    + remainingMonths + " month(s) and " + remainingDays + " day(s).");
         }
-        Recolte recolte =recoltMapper.toEntityFromResponse(recolt);
-        Arbre arbre1 = arbreMapper.toEntityFromResponse(arbre);
-        detailRecolte.setRecolte(recolte);
-        detailRecolte.setArbre(arbre1);
-        DetailRecolte savedDetailRecolt = detailRecolteRepository.save(detailRecolte);
-        ResponseDetailRecoltDTO response = detailRecoltMapper.toResponse(savedDetailRecolt);
+    }
+
+    @Override
+    public ResponseDetailRecoltDTO findHarvest(DetailRecolteId id) {
+        DetailRecolte detailRecolte = detailRecolteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("There are not Details to be found"));
+        ResponseDetailRecoltDTO response = detailRecoltMapper.toResponse(detailRecolte);
+        String age = classHelper.calculateArbreAge(detailRecolte.getArbre());
+        response.getArbre().setAge(age);
         return response;
     }
 
     @Override
-    public ResponseDetailRecoltDTO findHarvest(Long id) {
-        return null;
-    }
-
-    @Override
     public List<ResponseDetailRecoltDTO> findHarvests() {
-        return List.of();
+        List<DetailRecolte> details = detailRecolteRepository.findAll();
+        return details.stream().map(detailRecolte -> {
+            String age = classHelper.calculateArbreAge(detailRecolte.getArbre());
+            ResponseDetailRecoltDTO response = detailRecoltMapper.toResponse(detailRecolte);
+            response.getArbre().setAge(age);
+            return response;
+        }).toList();
     }
 
     @Override
-    public ResponseDetailRecoltDTO updateHarvest(CreateDetailRecoltDTO createDetailRecoltDTO) {
+    public ResponseDetailRecoltDTO updateHarvest(CreateDetailRecoltDTO createDetailRecoltDTO ,DetailRecolteId ids) {
         return null;
     }
 
     @Override
-    public boolean deleteHarvest(Long id) {
+    public boolean deleteHarvest(DetailRecolteId id) {
         return false;
     }
 }
