@@ -10,8 +10,10 @@ import com.wora.citronix.annotation.Exist.Exist;
 import com.wora.citronix.repository.ChampsRepository;
 import com.wora.citronix.repository.FermeRepository;
 import com.wora.citronix.service.FermeService;
+import jakarta.validation.Valid;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +30,9 @@ public class FermeController {
     @Autowired
     private FermeService fermeService;
 
+
     @PostMapping
-    public ResponseEntity<ResponseFermeDTO> createFerme(@RequestBody CreateFermeDTO createFermeDTO) {
+    public ResponseEntity<ResponseFermeDTO> createFerme(@RequestBody @Valid CreateFermeDTO createFermeDTO) {
         ResponseFermeDTO response = fermeService.createFerme(createFermeDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -46,11 +49,11 @@ public class FermeController {
         return ResponseEntity.status(HttpStatus.FOUND).body(response);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ResponseFermeDTO>> getAllFermesByNameAndLocation(@RequestBody SearchFermeDTO searchFermeDTO) {
-        List<ResponseFermeDTO> response = fermeService.getAllFermesByNameAndLocalisation(searchFermeDTO);
-        return ResponseEntity.status(HttpStatus.FOUND).body(response);
-    }
+//    @GetMapping("/{name}/{}")
+//    public ResponseEntity<List<ResponseFermeDTO>> getAllFermesByNameAndLocation(@RequestBody SearchFermeDTO searchFermeDTO) {
+//        List<ResponseFermeDTO> response = fermeService.getAllFermesByNameAndLocalisation(searchFermeDTO);
+//        return ResponseEntity.status(HttpStatus.FOUND).body(response);
+//    }
 
     @DeleteMapping("/{fermeId}")
     public ResponseEntity<?> deleteFermeById(@PathVariable("fermeId") @Exist(entity = Ferme.class, repository = FermeRepository.class) Long id){

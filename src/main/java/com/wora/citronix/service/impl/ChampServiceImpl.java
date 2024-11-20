@@ -31,12 +31,23 @@ public class ChampServiceImpl implements ChampService {
     public ResponseChampDTO createChamp(CreateChampDTO createChampDTO) {
         Champ champ = champMapper.toEntity(createChampDTO);
         Ferme ferme = fermeRepository.findById(createChampDTO.getFerme_id()).orElseThrow(() -> new EntityNotFoundException("Ferme not found"));
-        if (ferme.getSuperficie()/2 > champ.getSuperficie()){
-            Champ savedChamp = champsRepository.save(champ);
-            return champMapper.toResponse(savedChamp);
-        }else{
+        double allowableSuperficie = ferme.getSuperficie() / 2;
+        double totalExistingSuperficie = ferme.getChampsList().stream()
+                .mapToDouble(Champ::getSuperficie)
+                .sum();
+
+        if (allowableSuperficie < champ.getSuperficie()){
             throw new RuntimeException("champ ne peut dépasser "+ferme.getSuperficie()/2+" de la superficie totale de la ferme.");
         }
+
+        if (ferme.getSuperficie() < totalExistingSuperficie + champ.getSuperficie()) {
+            throw new RuntimeException("you have exceeted the limit , thers is only " + (ferme.getSuperficie() - totalExistingSuperficie) + " available");
+        }
+
+        champ.setFerme(ferme);
+        Champ savedChamp = champsRepository.save(champ);
+        return champMapper.toResponse(savedChamp);
+
     }
 
     @Override
