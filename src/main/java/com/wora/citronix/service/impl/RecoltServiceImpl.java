@@ -57,7 +57,7 @@ public class RecoltServiceImpl implements RecolteService {
     @Override
     public ResponseRecoltDTO updateRecolt(UpdateRecoltDTO updateRecoltDTO, Long id) {
         Recolte recolte = recolteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Recolt was not found"));
-        classHelper.checkRecoltData(updateRecoltDTO,id);
+        classHelper.checkRecoltData(updateRecoltDTO);
         classHelper.updateRecoltData(recolte,updateRecoltDTO);
         recolteRepository.save(recolte);
         return recoltMapper.toResponse(recolte);

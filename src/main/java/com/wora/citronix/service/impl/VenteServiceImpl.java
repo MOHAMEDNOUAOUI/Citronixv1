@@ -3,6 +3,7 @@ package com.wora.citronix.service.impl;
 import com.wora.citronix.DTO.Vente.CreateVenteDTO;
 import com.wora.citronix.DTO.Vente.ResponseVenteDTO;
 import com.wora.citronix.DTO.Vente.embdClient.ClientDTO;
+import com.wora.citronix.Entity.DetailRecolte;
 import com.wora.citronix.Entity.Recolte;
 import com.wora.citronix.Entity.Vente;
 import com.wora.citronix.Entity.emdb.Client;
@@ -14,7 +15,10 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -30,7 +34,11 @@ public class VenteServiceImpl implements VenteService {
         Vente vente = venteMapper.toEntity(createVenteDTO);
         Recolte recolte = recolteRepository.findById(recolt_id).orElseThrow(() -> new EntityNotFoundException("Recolt not found"));
 
-        if (vente.getDateVente().isBefore(recolte.getDateRecolte())){
+        LocalDate arbreRecoltDay = Objects.requireNonNull(recolte.getDetailRecoltes().stream()
+                .max(Comparator.comparing(DetailRecolte::getDateRecolte))
+                .orElse(null)).getDateRecolte();
+
+        if (vente.getDateVente().isBefore(arbreRecoltDay)){
             throw new RuntimeException("You cant sell before recolting");
         }
 
@@ -74,8 +82,6 @@ public class VenteServiceImpl implements VenteService {
     public boolean deleteVente(Long id) {
         if (venteRepository.existsById(id)){
             venteRepository.deleteById(id);
-        }else{
-            throw new EntityNotFoundException("Vente not found");
         }
         return true;
     }

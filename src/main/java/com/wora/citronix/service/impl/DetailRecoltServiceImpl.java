@@ -28,6 +28,8 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -45,11 +47,16 @@ public class DetailRecoltServiceImpl implements DetailRecoltService {
 
         Arbre arbre = arbreRepository.findById(createDetailRecoltDTO.getArbre_id()).orElseThrow(() -> new EntityNotFoundException("Arbre was not found"));
 
+//        LocalDate arbreRecoltDay = arbre.getDetailRecoltes().stream()
+//                .map(DetailRecolte::getRecolte)
+//                .max(Comparator.comparing(Recolte::getDateRecolte))
+//                .map(Recolte::getDateRecolte)
+//                .orElse(null);
+
         LocalDate arbreRecoltDay = arbre.getDetailRecoltes().stream()
-                .map(DetailRecolte::getRecolte)
-                .max(Comparator.comparing(Recolte::getDateRecolte))
-                .map(Recolte::getDateRecolte)
-                .orElse(null);
+                .max(Comparator.comparing(DetailRecolte::getDateRecolte))
+                .orElseThrow(() -> new IllegalArgumentException("No recoltes found"))
+                .getDateRecolte();
 
 
         if (arbreRecoltDay == null || arbreRecoltDay.plusMonths(3).isBefore(LocalDate.now())) {
@@ -81,7 +88,7 @@ public class DetailRecoltServiceImpl implements DetailRecoltService {
             long remainingMonths = 3 - periodBetweenLastRecoltAndNow.getMonths();
             long remainingDays = 30 - periodBetweenLastRecoltAndNow.getDays();
 
-            throw new RuntimeException("You cannot harvest this Arbre yet. Remaining time: "
+            throw new RuntimeException("You cannot harvest this Tree yet. Remaining time: "
                     + remainingMonths + " month(s) and " + remainingDays + " day(s).");
         }
     }

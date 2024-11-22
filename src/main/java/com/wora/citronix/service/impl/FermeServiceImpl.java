@@ -3,8 +3,10 @@ package com.wora.citronix.service.impl;
 import com.wora.citronix.DTO.Ferme.CreateFermeDTO;
 import com.wora.citronix.DTO.Ferme.ResponseFermeDTO;
 import com.wora.citronix.DTO.Ferme.SearchFermeDTO;
+import com.wora.citronix.DTO.Ferme.UpdateFermeDTO;
 import com.wora.citronix.Entity.Ferme;
 import com.wora.citronix.Mapper.FermeMapper;
+import com.wora.citronix.helpers.ClassHelper;
 import com.wora.citronix.repository.CriteriaBuilder.FermeCriteria;
 import com.wora.citronix.repository.FermeRepository;
 import com.wora.citronix.service.FermeService;
@@ -27,6 +29,8 @@ public class FermeServiceImpl implements FermeService {
 
     @Autowired
     private FermeMapper fermeMapper;
+    @Autowired
+    private ClassHelper classHelper;
 
     @Override
     public ResponseFermeDTO createFerme(CreateFermeDTO createFermeDTO) {
@@ -73,7 +77,9 @@ public class FermeServiceImpl implements FermeService {
     }
 
     @Override
-    public ResponseFermeDTO updateFerme(CreateFermeDTO createFermeDTO, Long id) {
+    public ResponseFermeDTO updateFerme(UpdateFermeDTO updateFermeDTO, Long id) {
+        Ferme ferme = fermeRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Ferme not found"));
+        classHelper.checkFermeData(updateFermeDTO);
         return null;
     }
 }

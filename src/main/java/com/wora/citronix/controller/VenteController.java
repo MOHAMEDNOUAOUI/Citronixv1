@@ -40,7 +40,7 @@ public class VenteController {
     @DeleteMapping("/{venteId}")
     public ResponseEntity<?> deleteVente(@PathVariable("venteId") Long id) {
         if (venteService.deleteVente(id)){
-            ResponseEntity.status(HttpStatus.OK).body("VEnte Deleted succefuly");
+            ResponseEntity.status(HttpStatus.OK).body("Vente Deleted succefuly");
         }
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Couldnt Delete the vente");
     }

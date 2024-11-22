@@ -19,9 +19,6 @@ public class Recolte {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "date_recolte" , nullable = false)
-    private LocalDate dateRecolte;
-
     @Column(nullable = false , name = "quantiteTotal")
     private Double quantiteTotal;
 

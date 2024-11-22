@@ -1,11 +1,15 @@
 package com.wora.citronix.helpers;
 
 import com.wora.citronix.DTO.Arbre.ResponseArbreDTO;
+import com.wora.citronix.DTO.Ferme.UpdateFermeDTO;
 import com.wora.citronix.DTO.Recolt.ResponseRecoltDTO;
 import com.wora.citronix.DTO.Recolt.UpdateRecoltDTO;
 import com.wora.citronix.Entity.Arbre;
+import com.wora.citronix.Entity.Champ;
+import com.wora.citronix.Entity.Ferme;
 import com.wora.citronix.Entity.Recolte;
 import com.wora.citronix.service.RecolteService;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Optional;
 
 @Data
 @Component
@@ -53,22 +58,53 @@ public class ClassHelper {
 
     // recolt
 
-    public void checkRecoltData(UpdateRecoltDTO updateRecoltDTO , Long id){
-        if (updateRecoltDTO.getDateRecolte() == null && updateRecoltDTO.getSaison() == null && updateRecoltDTO.getQuantiteTotal() == null){
+    public void checkRecoltData(UpdateRecoltDTO updateRecoltDTO ){
+        if (updateRecoltDTO.getSaison() == null && updateRecoltDTO.getQuantiteTotal() == null){
+            throw new RuntimeException("No data provided to be updated");
+        }
+    }
+
+    public void checkFermeData(UpdateFermeDTO updateFermeDTO){
+        if (updateFermeDTO.getLocalisation() == null && updateFermeDTO.getNom() == null && updateFermeDTO.getSuperficie() == null && updateFermeDTO.getDateDeCreation() == null){
             throw new RuntimeException("No data provided to be updated");
         }
     }
 
     public void updateRecoltData(Recolte recolte , UpdateRecoltDTO updateRecoltDTO){
-        if (updateRecoltDTO.getQuantiteTotal() != null && !updateRecoltDTO.getQuantiteTotal().equals(recolte.getQuantiteTotal()) && updateRecoltDTO.getQuantiteTotal() >= 0){
-            recolte.setQuantiteTotal(updateRecoltDTO.getQuantiteTotal());
-        }
-        if (updateRecoltDTO.getDateRecolte() != null && !updateRecoltDTO.getDateRecolte().equals(recolte.getDateRecolte())) {
-            recolte.setDateRecolte(updateRecoltDTO.getDateRecolte());
-        }
+        Optional.ofNullable(updateRecoltDTO.getQuantiteTotal())
+                .filter(quantity -> !quantity.equals(recolte.getQuantiteTotal()))
+                .ifPresent(recolte::setQuantiteTotal);
+
 
         if (updateRecoltDTO.getSaison() != null && !updateRecoltDTO.getSaison().equals(recolte.getSaison())) {
             recolte.setSaison(updateRecoltDTO.getSaison());
         }
+    }
+
+    private String nom;
+
+    @Column(name = "localisation" , nullable = false)
+    private String localisation;
+
+    @Column(nullable = false , name = "superficie")
+    private Double superficie;
+
+    @Column(name = "date_de_creation" , nullable = false)
+    private LocalDate dateDeCreation;
+
+    public void updateFermeData(Ferme ferme , UpdateFermeDTO updateFermeDTO){
+
+            Optional.ofNullable(updateFermeDTO.getLocalisation())
+                    .filter(localisation -> !localisation.equals(ferme.getLocalisation()))
+                    .ifPresent(ferme::setLocalisation);
+
+            Optional.ofNullable(updateFermeDTO.getSuperficie())
+                    .filter(superficie -> !superficie.equals(ferme.getSuperficie()))
+                    .ifPresent(superficie -> {
+                        Double totalSuperifcierDesChamps = ferme.getChampsList().stream().mapToDouble(Champ::getSuperficie).sum();
+                        if (totalSuperifcierDesChamps < superficie){
+                            throw new RuntimeException("You can update a superficie : " + superficie + " because the total allocated superficie is :" + totalSuperifcierDesChamps + " and the total superficier is " + ferme.getSuperficie());
+                        }
+                    });
     }
 }

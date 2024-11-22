@@ -17,8 +17,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateRecoltDTO {
-    @TodayDate
-    private LocalDate dateRecolte = LocalDate.now();
     @NotNull
     @Min(0)
     private Double quantiteTotal = 0.0;

@@ -20,7 +20,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ResponseRecoltDTO {
     private Long id;
-    private LocalDate dateRecolte;
     private Double quantiteTotal;
     private Saison saison;
 //    private List<Vente> venteList;

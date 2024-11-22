@@ -22,7 +22,6 @@ public class CreateVenteDTO {
     private Double prixUnitaire;
     @NotNull
     private Double quantity;
-    @NotBlank
     private ClientDTO client;
     @NotNull
     @Exist(message = "Recolt does not exist" , entity = Recolte.class , repository = RecolteRepository.class)

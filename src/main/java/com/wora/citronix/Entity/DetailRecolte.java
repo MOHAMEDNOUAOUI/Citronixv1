@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,6 +19,9 @@ public class DetailRecolte {
 
     @Column(nullable = false)
     private Double quantite;
+
+    @Column(name = "date_recolte" , nullable = false)
+    private LocalDate dateRecolte;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("arbreId")

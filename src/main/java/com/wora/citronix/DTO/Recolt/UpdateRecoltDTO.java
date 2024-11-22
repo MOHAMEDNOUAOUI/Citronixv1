@@ -11,7 +11,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateRecoltDTO {
-    private LocalDate dateRecolte;
     private Double quantiteTotal;
     private Saison saison;
 }

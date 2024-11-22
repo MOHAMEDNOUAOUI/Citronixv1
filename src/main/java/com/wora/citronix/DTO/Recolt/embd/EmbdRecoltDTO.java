@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class EmbdRecoltDTO {
     private Long id;
-    private LocalDate dateRecolte;
     private Double quantiteTotal;
     private Saison saison;
 }
