@@ -1,5 +1,6 @@
 package com.wora.citronix.Entity;
 
+import com.wora.citronix.Entity.emdb.Client;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +24,10 @@ public class Vente {
 
     private Double prixUnitaire;
 
-    private String client;
+    private Double quantity;
+
+    @Embedded
+    private Client client;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Recolte recolte;

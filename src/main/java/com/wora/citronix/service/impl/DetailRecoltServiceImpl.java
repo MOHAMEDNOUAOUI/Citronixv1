@@ -106,13 +106,17 @@ public class DetailRecoltServiceImpl implements DetailRecoltService {
         }).toList();
     }
 
+
+    @Override
+    public boolean deleteHarvest(DetailRecolteId id) {
+        DetailRecolte detailRecolte = detailRecolteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Detail recolt not found"));
+        detailRecolteRepository.delete(detailRecolte);
+        return true;
+    }
+
     @Override
     public ResponseDetailRecoltDTO updateHarvest(CreateDetailRecoltDTO createDetailRecoltDTO ,DetailRecolteId ids) {
         return null;
     }
 
-    @Override
-    public boolean deleteHarvest(DetailRecolteId id) {
-        return false;
-    }
 }
