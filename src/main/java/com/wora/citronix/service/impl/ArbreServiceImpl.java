@@ -86,7 +86,11 @@ public class ArbreServiceImpl implements ArbreService {
     }
 
     @Override
-    public ResponseArbreDTO updateArebre(CreateArbreDTO createArbreDTO) {
-        return null;
+    public ResponseArbreDTO updateArebre(CreateArbreDTO createArbreDTO , Long id) {
+        Arbre arbre = arbreRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Arbre not found"));
+        classHelper.checkArbreData(createArbreDTO);
+        classHelper.updateArbreData(arbre,createArbreDTO);
+        Arbre savedArbre = arbreRepository.save(arbre);
+        return arbreMapper.toResponse(savedArbre);
     }
 }

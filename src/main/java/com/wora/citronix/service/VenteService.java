@@ -12,5 +12,5 @@ public interface VenteService {
     ResponseVenteDTO getVenteById(Long id);
     ResponseVenteDTO getVenteByClient(ClientDTO client);
     boolean deleteVente(Long id);
-    ResponseVenteDTO updateVente();
+    ResponseVenteDTO updateVente(CreateVenteDTO createVenteDTO , Long id);
 }

@@ -5,6 +5,7 @@ import com.wora.citronix.DTO.Champ.ResponseChampDTO;
 import com.wora.citronix.Entity.Champ;
 import com.wora.citronix.Entity.Ferme;
 import com.wora.citronix.Mapper.ChampMapper;
+import com.wora.citronix.helpers.ClassHelper;
 import com.wora.citronix.repository.ChampsRepository;
 import com.wora.citronix.repository.FermeRepository;
 import com.wora.citronix.service.ChampService;
@@ -25,31 +26,15 @@ public class ChampServiceImpl implements ChampService {
 
     @Autowired
     private ChampMapper champMapper;
+    @Autowired
+    private ClassHelper classHelper;
 
 
     @Override
     public ResponseChampDTO createChamp(CreateChampDTO createChampDTO) {
         Champ champ = champMapper.toEntity(createChampDTO);
         Ferme ferme = fermeRepository.findById(createChampDTO.getFerme_id()).orElseThrow(() -> new EntityNotFoundException("Ferme not found"));
-        double allowableSuperficie = ferme.getSuperficie() / 2;
-        double totalExistingSuperficie = ferme.getChampsList().stream()
-                .mapToDouble(Champ::getSuperficie)
-                .sum();
-
-        if (ferme.getChampsList().size() >= 10) {
-            throw new RuntimeException("Farm cannot have more than 10 champs");
-        }
-
-        if (allowableSuperficie < champ.getSuperficie()){
-            throw new RuntimeException("champ ne peut dépasser "+ferme.getSuperficie()/2+" de la superficie totale de la ferme.");
-        }
-
-        if (ferme.getSuperficie() < totalExistingSuperficie + champ.getSuperficie()) {
-            throw new RuntimeException("you have exceeted the limit , thers is only " + (ferme.getSuperficie() - totalExistingSuperficie) + " available");
-        }
-
-
-
+        classHelper.checkChampDataBeforeCreate(champ);
         champ.setFerme(ferme);
         Champ savedChamp = champsRepository.save(champ);
         return champMapper.toResponse(savedChamp);
@@ -79,7 +64,11 @@ public class ChampServiceImpl implements ChampService {
     }
 
     @Override
-    public ResponseChampDTO updateChamp(CreateChampDTO createChampDTO) {
-        return null;
+    public ResponseChampDTO updateChamp(CreateChampDTO createChampDTO , Long id) {
+        Champ champ = champsRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Champ doesnt exist"));
+        classHelper.checkChampData(createChampDTO);
+        classHelper.updateChamp(champ, createChampDTO);
+        Champ savedChamp = champsRepository.save(champ);
+        return champMapper.toResponse(savedChamp);
     }
 }

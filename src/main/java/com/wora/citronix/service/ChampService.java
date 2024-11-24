@@ -10,6 +10,6 @@ public interface ChampService {
     List<ResponseChampDTO> getAllChamps();
     ResponseChampDTO getChampsById(Long id);
     boolean deleteChamps(Long id);
-    ResponseChampDTO updateChamp(CreateChampDTO createChampDTO);
+    ResponseChampDTO updateChamp(CreateChampDTO createChampDTO , Long id);
 }
 

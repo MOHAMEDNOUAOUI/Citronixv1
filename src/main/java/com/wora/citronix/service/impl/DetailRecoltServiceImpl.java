@@ -55,8 +55,8 @@ public class DetailRecoltServiceImpl implements DetailRecoltService {
 
         LocalDate arbreRecoltDay = arbre.getDetailRecoltes().stream()
                 .max(Comparator.comparing(DetailRecolte::getDateRecolte))
-                .orElseThrow(() -> new IllegalArgumentException("No recoltes found"))
-                .getDateRecolte();
+                .map(DetailRecolte::getDateRecolte)
+                .orElse(null);
 
 
         if (arbreRecoltDay == null || arbreRecoltDay.plusMonths(3).isBefore(LocalDate.now())) {

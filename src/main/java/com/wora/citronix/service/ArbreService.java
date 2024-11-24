@@ -10,5 +10,5 @@ public interface ArbreService {
     ResponseArbreDTO getArbreById(Long id);
     List<ResponseArbreDTO> getAllArbres();
     boolean deleteArbre(Long id);
-    ResponseArbreDTO updateArebre(CreateArbreDTO createArbreDTO);
+    ResponseArbreDTO updateArebre(CreateArbreDTO createArbreDTO , Long id);
 }

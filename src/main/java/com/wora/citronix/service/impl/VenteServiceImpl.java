@@ -8,6 +8,7 @@ import com.wora.citronix.Entity.Recolte;
 import com.wora.citronix.Entity.Vente;
 import com.wora.citronix.Entity.emdb.Client;
 import com.wora.citronix.Mapper.VenteMapper;
+import com.wora.citronix.helpers.ClassHelper;
 import com.wora.citronix.repository.RecolteRepository;
 import com.wora.citronix.repository.VenteRepository;
 import com.wora.citronix.service.VenteService;
@@ -27,6 +28,7 @@ public class VenteServiceImpl implements VenteService {
     private final VenteRepository venteRepository;
     private final RecolteRepository recolteRepository;
     private final VenteMapper venteMapper;
+    private final ClassHelper classHelper;
 
     @Override
     public ResponseVenteDTO createVente(CreateVenteDTO createVenteDTO) {
@@ -34,9 +36,10 @@ public class VenteServiceImpl implements VenteService {
         Vente vente = venteMapper.toEntity(createVenteDTO);
         Recolte recolte = recolteRepository.findById(recolt_id).orElseThrow(() -> new EntityNotFoundException("Recolt not found"));
 
-        LocalDate arbreRecoltDay = Objects.requireNonNull(recolte.getDetailRecoltes().stream()
+        LocalDate arbreRecoltDay = recolte.getDetailRecoltes().stream()
                 .max(Comparator.comparing(DetailRecolte::getDateRecolte))
-                .orElse(null)).getDateRecolte();
+                .map(DetailRecolte::getDateRecolte)
+                .orElse(null);
 
         if (vente.getDateVente().isBefore(arbreRecoltDay)){
             throw new RuntimeException("You cant sell before recolting");
@@ -87,8 +90,12 @@ public class VenteServiceImpl implements VenteService {
     }
 
     @Override
-    public ResponseVenteDTO updateVente() {
-        return null;
+    public ResponseVenteDTO updateVente(CreateVenteDTO createVenteDTO , Long id) {
+        Vente vente = venteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Vente not found"));
+        classHelper.checkVenteData(createVenteDTO);
+        classHelper.updateVente(vente , createVenteDTO);
+        Vente savedVente = venteRepository.save(vente);
+        return venteMapper.toResponse(savedVente);
     }
 
 

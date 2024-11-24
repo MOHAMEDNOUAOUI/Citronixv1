@@ -80,6 +80,8 @@ public class FermeServiceImpl implements FermeService {
     public ResponseFermeDTO updateFerme(UpdateFermeDTO updateFermeDTO, Long id) {
         Ferme ferme = fermeRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Ferme not found"));
         classHelper.checkFermeData(updateFermeDTO);
-        return null;
+        classHelper.updateFermeData(ferme, updateFermeDTO);
+        fermeRepository.save(ferme);
+        return fermeMapper.toResponse(ferme);
     }
 }
